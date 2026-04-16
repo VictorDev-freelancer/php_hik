@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Digital : crearOrden()
+    Digital --> Fresado : avanzarAreaSiguiente()
+    Digital --> Yeso : avanzarAreaSiguiente()
+    Fresado --> Inyectado : finalizarSintetizado()
+    Yeso --> Inyectado : registrarSalida()
+    Inyectado --> Ceramica : verificarCalidad() OK
+    Ceramica --> Impresion : estaTerminado() OK
+    Impresion --> Calidad : finalizarYTransferir()
+    Calidad --> Inyectado : retrocederAArea() ERROR
+    Calidad --> Fresado : retrocederAArea() ERROR
+    Calidad --> Ceramica : retrocederAArea() ERROR
+    Calidad --> [*] : FINALIZADO

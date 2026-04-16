@@ -1,0 +1,173 @@
+classDiagram
+    class IProcesable {
+        <<interface>>
+        +iniciarProceso(ordenId, operadorId) bool
+        +finalizarProceso(ordenId, operadorId) bool
+        +validarCalidad(ordenId) bool
+        +getNombreArea() string
+    }
+    class IObservable {
+        <<interface>>
+        +suscribir(evento, observador) void
+        +disparar(evento, datos) void
+    }
+    class OrdenTrabajo {
+        -int idOrden
+        -DateTime fechaIngreso
+        -string tipoEntrada
+        -OrderStatus estado
+        -AreaType areaActual
+        +cambiarArea(nuevaArea, operadorId) void
+        +actualizarEstado(nuevoEstado) void
+        +agregarDetalleTecnico(area, detalle) void
+        +resumen() string
+    }
+    class WorkflowManager {
+        -array observadores
+        -array ordenesActivas
+        +suscribir(evento, observador) void
+        +disparar(evento, datos) void
+        +registrarOrden(orden) void
+        +avanzarAreaSiguiente(ordenId, areaDestino, operadorId) bool
+        +retrocederAArea(ordenId, areaRetroceso, operadorId, motivo) bool
+    }
+    class AuditLogger {
+        -array registros
+        +manejarEvento(datos) void
+        +getRegistros() array
+        +exportarComoJson() string
+    }
+    class NotificacionTecnico {
+        -array notificacionesEnviadas
+        +manejarEvento(datos) void
+    }
+    class EfficiencyReportService {
+        -AuditLogger auditLogger
+        +GetEfficiencyReport() array
+    }
+    class Maquina {
+        -string nombre
+        -bool aceptaZirconio
+        -bool aceptaPMMA
+        -bool enUso
+        +verificarDisponibilidad(material) bool
+        +ocupar() void
+        +liberar() void
+    }
+    class Inventario {
+        -array stock
+        +verificarStock(material, cantidad) bool
+        +descontarStock(material, cantidad) void
+    }
+    class PiezaDental {
+        -int id
+        -string tipoDiseño
+        +iniciarProcesoCeramico() void
+    }
+    class Ajuste {
+        -bool formaAdaptacion
+        -bool texturaAltura
+        +validarCalidad() bool
+    }
+    class RegistroIncidencia {
+        -int idOrden
+        -string problema
+        -AreaType areaRetroceso
+        +retornarAAdaptacion() array
+    }
+    class FaseTermica {
+        -float temperaturaMaxima
+        -int tiempoMinutos
+        +validarCurvaCalor() bool
+    }
+    class AjusteAdaptacion {
+        -bool escaneoIntraoralOk
+        -bool ajusteOclusalOk
+        +ValidarEscaneoIntraoral() bool
+        +finalizarOrden() bool
+    }
+    class ProcesoInyectado {
+        -int ordenId
+        +registrarFase(nombreFase) void
+        +verificarCalidad() bool
+    }
+    class OrdenImpresion {
+        -int idOrden
+        -EstadoCeramica estado
+        +registrarError(tipoError) void
+        +actualizarEstado() void
+        +estaTerminado() bool
+    }
+    class PostProcesado {
+        -int tiempoLavado
+        -int tiempoFotocurado
+        -float temperatura
+        +validarProceso() bool
+    }
+    class ControlMantenimiento {
+        -DateTime ultimaLimpieza
+        -int totalImpresiones
+        +notificarMantenimiento() bool
+    }
+    class ModuloImpresion {
+        -bool impresionValida
+        -string tipoYeso
+        +consultarPrioridadEnCola() array
+        +finalizarYTransferir() array
+    }
+    class GestionPrioridad {
+        -PriorityLevel nivel
+        +calcularOrdenCola() array
+    }
+    class TransferenciaArea {
+        -string areaDestino
+        +notificarSiguienteEstacion(ordenId) array
+    }
+    class ProcesoFresado {
+        -Maquina maquina
+        -Inventario inventario
+        +iniciarProceso(ordenId, operadorId) bool
+        +finalizarProceso(ordenId, operadorId) bool
+    }
+    class ProcesoDental {
+        +iniciarProceso(ordenId, operadorId) bool
+        +finalizarProceso(ordenId, operadorId) bool
+    }
+    class ProcesoAreaInyectado {
+        +iniciarProceso(ordenId, operadorId) bool
+        +finalizarProceso(ordenId, operadorId) bool
+    }
+    class ProcesoCeramica {
+        +iniciarProceso(ordenId, operadorId) bool
+        +finalizarProceso(ordenId, operadorId) bool
+    }
+    class ProcesoYeso {
+        +iniciarProceso(ordenId, operadorId) bool
+        +finalizarProceso(ordenId, operadorId) bool
+    }
+    class ProcesoImpresion {
+        +iniciarProceso(ordenId, operadorId) bool
+        +finalizarProceso(ordenId, operadorId) bool
+    }
+
+    WorkflowManager ..|> IObservable
+    WorkflowManager --> OrdenTrabajo : gestiona
+    WorkflowManager --> AuditLogger : notifica
+    WorkflowManager --> NotificacionTecnico : notifica
+    EfficiencyReportService --> AuditLogger : lee
+    ProcesoDental ..|> IProcesable
+    ProcesoFresado ..|> IProcesable
+    ProcesoAreaInyectado ..|> IProcesable
+    ProcesoCeramica ..|> IProcesable
+    ProcesoYeso ..|> IProcesable
+    ProcesoImpresion ..|> IProcesable
+    ProcesoFresado --> Maquina
+    ProcesoFresado --> Inventario
+    PiezaDental --> Ajuste : requiere
+    Ajuste --> RegistroIncidencia : si falla
+    ProcesoInyectado *-- FaseTermica
+    ProcesoInyectado *-- AjusteAdaptacion
+    OrdenImpresion --> PostProcesado
+    OrdenImpresion --> ControlMantenimiento
+    ModuloImpresion --> GestionPrioridad : consulta
+    ModuloImpresion --> TransferenciaArea : transfiere

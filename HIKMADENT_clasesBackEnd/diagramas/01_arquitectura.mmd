@@ -1,0 +1,43 @@
+graph TD
+    subgraph Contracts["Contracts - Interfaces"]
+        IProcesable["IProcesable\n<<interface>>"]
+        IObservable["IObservable\n<<interface>>"]
+    end
+
+    subgraph Enums["Enums - Tipos Fuertes"]
+        AreaType["AreaType\n<<enum>>"]
+        OrderStatus["OrderStatus\n<<enum>>"]
+        MaterialType["MaterialType\n<<enum>>"]
+        PriorityLevel["PriorityLevel\n<<enum>>"]
+    end
+
+    subgraph Services["Services - Servicios"]
+        WorkflowManager["WorkflowManager"]
+        EfficiencyReportService["EfficiencyReportService\nGetEfficiencyReport()"]
+    end
+
+    subgraph Observers["Observers - BI y Notificaciones"]
+        AuditLogger["AuditLogger\nmanejarEvento()"]
+        NotificacionTecnico["NotificacionTecnico\nmanejarEvento()"]
+    end
+
+    subgraph Processes["Processes - Implementan IProcesable"]
+        ProcesoDental["ProcesoDental"]
+        ProcesoFresado["ProcesoFresado"]
+        ProcesoAreaInyectado["ProcesoAreaInyectado"]
+        ProcesoCeramica["ProcesoCeramica"]
+        ProcesoYeso["ProcesoYeso"]
+        ProcesoImpresion["ProcesoImpresion"]
+    end
+
+    WorkflowManager -->|"implementa"| IObservable
+    WorkflowManager -->|"dispara eventos a"| AuditLogger
+    WorkflowManager -->|"dispara eventos a"| NotificacionTecnico
+    EfficiencyReportService -->|"lee registros de"| AuditLogger
+
+    ProcesoDental -->|"implementa"| IProcesable
+    ProcesoFresado -->|"implementa"| IProcesable
+    ProcesoAreaInyectado -->|"implementa"| IProcesable
+    ProcesoCeramica -->|"implementa"| IProcesable
+    ProcesoYeso -->|"implementa"| IProcesable
+    ProcesoImpresion -->|"implementa"| IProcesable
